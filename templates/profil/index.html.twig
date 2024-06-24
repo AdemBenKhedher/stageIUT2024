@@ -1,0 +1,189 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello Profil
+{% endblock %}
+
+{% block body %}
+	<div class="d-flex justify-content-center align-items-center vh-100">
+		<div class="container">
+			<div class="row g-4">
+				<div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">
+					<div class="team-item rounded overflow-hidden">
+						<div class="position-relative">
+							<img class="img-fluid" src="{{ asset('uploads/Profilephoto/') ~ app.user.photo }}" alt="Profile Image">
+							<div class="position-absolute start-50 top-100 translate-middle d-flex align-items-center">
+								<a class="btn btn-square mx-1" data-toggle="modal" data-target="#exampleModal" title="Settings">
+									<i class="fa fa-cog"></i>
+								</a>
+								<a class="btn btn-square mx-1" data-toggle="modal" data-target="#exampleModal" title="Edit Profile Image">
+									<i class="fa fa-pencil-alt"></i>
+								</a>
+							</div>
+
+						</div>
+						<div class="text-center p-4 mt-3">
+							<h5 class="fw-bold mb-0">{{ app.user.prenom }}</h5>
+							<small>{{ app.user.nom }}</small>
+							<div class="contact-details mt-3">
+								<p class="mb-1 contact-item">
+									<i class="fa fa-phone contact-icon"></i>
+									{{ app.user.NTelephone }}
+								</p>
+								<a class="btn btn-link p-0 d-block mb-1 contact-item" href="{{path('app_profil')}}" title="Annonces">
+									<i class="fa fa-exclamation-circle contact-icon"></i>
+									Annonces
+								</a>
+								<a class="btn btn-link p-0 d-block mb-1 contact-item" href="{{path('app_reservation_user')}}" title="Reservations">
+									<i class="fa fa-calendar-alt contact-icon"></i>
+									Reservations
+								</a>
+								<a class="btn btn-link p-0 d-block mb-1 contact-item" href="#payments-section" title="Payments">
+									<i class="fa fa-credit-card contact-icon"></i>
+									Payments
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div
+					class="col-lg-9 col-md-6" data-wow-delay="0.3s" style="visibility: visible; animation-delay: 0.3s; animation-name: fadeInUp;">
+					<!-- Sections Start -->
+					<div class="container-xxl py-5">
+						<div class="container">
+							<div
+								class="tab-content">
+								<!-- Annonces Section Start -->
+								<div id="annonces-section" class="tab-pane fade show p-0 active">
+									<h2 class="text-center mb-4">Mes Annonces</h2>
+									<div class="row g-4">
+										{% for annonce in annonces %}
+											{% set adresse = Adresses[annonce.id] ?? null %}
+											<div class="col-lg-4 col-md-6 wow" data-wow-delay="0.1s">
+												<div class="property-item rounded overflow-hidden">
+													<div class="position-relative overflow-hidden">
+														{% if annonce.etat == 1 %}
+															<div class="bg-success rounded text-white position-absolute start-0 top-0 m-4 py-1 px-3">
+																Disponible
+															</div>
+														{% elseif annonce.etat == 2 %}
+															<div class="bg-warning rounded text-white position-absolute start-0 top-0 m-4 py-1 px-3">
+																En attente
+															</div>
+														{% elseif annonce.etat == 3 %}
+															<div class="bg-info rounded text-white position-absolute start-0 top-0 m-4 py-1 px-3">
+																Reservé
+															</div>
+														{% else %}
+															<div class="bg-danger rounded text-white position-absolute start-0 top-0 m-4 py-1 px-3">
+																Annulé
+															</div>
+														{% endif %}
+														{% for image in annonce.images %}
+															<a href="{{ path('app_annonce_show', {'id': annonce.id}) }}">
+																<img src="{{ asset('uploads/images/' ~ image.image) }}" alt="{{ image.alt }}" class="img-fluid">
+															</a>
+														{% endfor %}
+
+														<div class="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">{{ annonce.categorie }}</div>
+													</div>
+													<div class="p-4 pb-0">
+														<h5 class="text-primary mb-3">€{{ annonce.prix }}</h5>
+														<a class="d-block h5 mb-2" href="#">{{ annonce.nom }}</a>
+														{% if adresse %}
+															<p>
+																<i class="fa fa-map-marker-alt text-primary me-2"></i>
+																{{ adresse.rue }}
+																{{ adresse.codepostal }},
+																{{ adresse.ville }},
+																{{ adresse.pays }}
+																({{ adresse.complement }})
+															</p>
+														{% endif %}
+													</div>
+													<div class="d-flex border-top">
+														<small class="flex-fill text-center border-end py-2">
+															<i class="fa fa-calendar text-primary me-2"></i>Dispo a partir de
+															{{ annonce.DateDebut|date('d-m-Y') }}
+														</small>
+														<small class="flex-fill text-center border-end py-2">
+															<i class="fa fa-bed text-primary me-2"></i>
+															{{ annonce.capacite }}
+														</small>
+													</div>
+												</div>
+											</div>
+										{% endfor %}
+										<div class="col-12 text-center wow fadeInUp" data-wow-delay="0.1s">
+											<a class="btn btn-primary py-3 px-5" href="{{ path('app_annonce_new') }}">Ajouter une Annonce</a>
+										</div>
+									</div>
+								</div>
+								<!-- Annonces Section End -->
+							</div>
+						</div>
+					</div>
+					<!-- Sections End -->
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Modal -->
+	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Modifier Votre Compte</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					{{ form_start(form) }}
+					<div class="form-group">
+						{{ form_label(form.email) }}
+						{{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+						{{ form_errors(form.email) }}
+					</div>
+					<div class="form-group">
+						{{ form_label(form.nom) }}
+						{{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+						{{ form_errors(form.nom) }}
+					</div>
+					<div class="form-group">
+						{{ form_label(form.prenom) }}
+						{{ form_widget(form.prenom, {'attr': {'class': 'form-control'}}) }}
+						{{ form_errors(form.prenom) }}
+					</div>
+					<div class="form-group">
+						{{ form_label(form.n_telephone) }}
+						{{ form_widget(form.n_telephone, {'attr': {'class': 'form-control'}}) }}
+						{{ form_errors(form.n_telephone) }}
+					</div>
+					<div class="form-group">
+						{{ form_label(form.date_de_naissance) }}
+						{{ form_widget(form.date_de_naissance, {'attr': {'class': 'form-control custom-date', 'placeholder': 'JJ/MM/AAAA'}}) }}
+						{{ form_errors(form.date_de_naissance) }}
+					</div>
+					<div class="form-group">
+						{{ form_label(form.photo) }}
+						{{ form_widget(form.photo) }}
+						{{ form_errors(form.photo) }}
+					</div>
+
+					<button type="submit" class="btn btn-primary">Save changes</button>
+					{{ form_end(form) }}
+				</div>
+				<div class="modal-footer">
+
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+
+{% endblock %}
